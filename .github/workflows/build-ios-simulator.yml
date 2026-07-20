@@ -1,0 +1,46 @@
+name: Build iOS (Simulateur)
+
+# Vérifie que le projet iOS compile correctement, sur le Simulateur (aucune
+# signature Apple requise à ce stade — pas encore installable sur un vrai iPhone).
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-ios-simulator:
+    runs-on: macos-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer XcodeGen
+        run: brew install xcodegen
+
+      - name: Générer le projet Xcode
+        run: xcodegen generate
+
+      - name: Compiler pour le Simulateur iOS
+        run: |
+          xcodebuild \
+            -project DevisPro.xcodeproj \
+            -scheme DevisPro \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Localiser l'application compilée
+        run: |
+          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "DevisPro.app" -path "*iphonesimulator*" | head -n 1)
+          echo "Trouvé : $APP_PATH"
+          mkdir -p output
+          cp -R "$APP_PATH" output/
+
+      - name: Publier le résultat en téléchargement
+        uses: actions/upload-artifact@v4
+        with:
+          name: DevisPro-iOS-Simulator
+          path: output/DevisPro.app
+          if-no-files-found: error
