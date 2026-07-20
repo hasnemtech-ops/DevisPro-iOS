@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Devis Pro</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#10233A">
+<style>
+  :root{
+    --navy:#10233A;
+    --navy-2:#1B3A5C;
+    --amber:#F5B93D;
+    --amber-dark:#D99A1B;
+    --bg:#F5F7FA;
+    --surface:#FFFFFF;
+    --text:#16212E;
+    --muted:#5B6B7C;
+    --success:#2E8B57;
+    --danger:#C4432B;
+    --border:#E1E5EA;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    -webkit-tap-highlight-color:transparent;
+    padding-bottom:70px;
+  }
+  h1,h2,h3{font-family:inherit;letter-spacing:-0.01em;margin:0;}
+  .app-header{
+    background:var(--navy);
+    color:#fff;
+    padding:18px 16px 14px;
+    position:sticky;top:0;z-index:20;
+  }
+  .app-header .brand{
+    display:flex;align-items:center;gap:10px;
+  }
+  .bolt{width:22px;height:22px;flex:none;}
+  .app-header h1{font-size:19px;font-weight:700;}
+  .app-header .sub{font-size:12px;color:#B9C6D6;margin-top:2px;}
+  .circuit-rule{
+    height:2px;background:linear-gradient(90deg,var(--amber),transparent 85%);
+    margin-top:12px;border-radius:2px;
+  }
+  nav.tabs{
+    display:flex;background:var(--surface);border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:19;
+  }
+  nav.tabs button{
+    flex:1;padding:12px 4px;border:none;background:none;font-size:13.5px;font-weight:600;
+    color:var(--muted);border-bottom:3px solid transparent;cursor:pointer;
+  }
+  nav.tabs button.active{color:var(--navy);border-bottom-color:var(--amber);}
+  main{padding:16px;max-width:720px;margin:0 auto;}
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:16px;margin-bottom:14px;
+  }
+  .card h2{font-size:15px;text-transform:uppercase;letter-spacing:.04em;color:var(--navy-2);margin-bottom:12px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:4px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  input[type=text],input[type=number],input[type=email],input[type=tel],input[type=date],select,textarea{
+    width:100%;padding:10px 11px;border:1px solid var(--border);border-radius:8px;
+    font-size:14.5px;background:#fff;color:var(--text);font-family:inherit;
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--amber);outline-offset:0;border-color:var(--amber-dark);}
+  textarea{resize:vertical;min-height:70px;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    padding:11px 16px;border-radius:9px;border:none;font-size:14px;font-weight:700;
+    cursor:pointer;text-decoration:none;
+  }
+  .btn-primary{background:var(--navy);color:#fff;}
+  .btn-primary:active{background:var(--navy-2);}
+  .btn-amber{background:var(--amber);color:var(--navy);}
+  .btn-amber:active{background:var(--amber-dark);}
+  .btn-ghost{background:#fff;color:var(--navy);border:1px solid var(--border);}
+  .btn-danger{background:#fff;color:var(--danger);border:1px solid #F0CFC7;}
+  .btn-sm{padding:7px 10px;font-size:12.5px;border-radius:7px;}
+  .btn-block{width:100%;}
+  .actions-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+  .list-item{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:12px 4px;border-bottom:1px solid var(--border);gap:10px;
+  }
+  .list-item:last-child{border-bottom:none;}
+  .list-item .meta{font-size:12px;color:var(--muted);margin-top:2px;}
+  .list-item .name{font-weight:700;font-size:14.5px;}
+  .pill{
+    display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;
+    background:#EAF1F8;color:var(--navy-2);
+  }
+  .pill.brouillon{background:#EFEFEF;color:#666;}
+  .pill.envoye{background:#FFF3D9;color:#946A00;}
+  .pill.accepte{background:#E4F3EA;color:var(--success);}
+  .pill.refuse{background:#FBE7E2;color:var(--danger);}
+  .empty-state{
+    text-align:center;padding:40px 20px;color:var(--muted);
+  }
+  .empty-state .bolt{width:34px;height:34px;margin:0 auto 10px;opacity:.5;}
+  .fab{
+    position:fixed;bottom:22px;right:20px;
+    width:56px;height:56px;border-radius:50%;
+    background:var(--amber);color:var(--navy);border:none;
+    font-size:28px;font-weight:400;box-shadow:0 6px 16px rgba(16,35,58,.25);
+    cursor:pointer;z-index:25;line-height:0;
+  }
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(16,35,58,.5);
+    display:flex;align-items:flex-end;justify-content:center;z-index:50;
+  }
+  .modal{
+    background:#fff;width:100%;max-width:720px;border-radius:16px 16px 0 0;
+    max-height:92vh;overflow-y:auto;padding:18px 16px 24px;
+  }
+  .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .modal-header h2{font-size:16px;color:var(--navy);}
+  .close-x{background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;padding:4px 8px;}
+  .line-item{
+    border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:10px;position:relative;
+  }
+  .line-item .row2{margin-bottom:8px;}
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:4px;border:1px solid var(--border);border-radius:10px;}
+  table.lignes-table{width:100%;border-collapse:collapse;min-width:560px;}
+  table.lignes-table th{
+    background:var(--navy);color:#fff;font-size:11px;text-transform:uppercase;letter-spacing:.03em;
+    text-align:left;padding:8px 8px;white-space:nowrap;
+  }
+  table.lignes-table th.col-num, table.lignes-table th.col-rm{text-align:right;}
+  table.lignes-table td{padding:5px 6px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  table.lignes-table tbody tr:last-child td{border-bottom:none;}
+  table.lignes-table tbody tr:nth-child(even){background:#FAFBFC;}
+  table.lignes-table .col-desig{width:auto;min-width:180px;}
+  table.lignes-table .col-num{width:110px;}
+  table.lignes-table .col-rm{width:34px;}
+  table.lignes-table input{
+    width:100%;padding:7px 8px;border:1px solid transparent;border-radius:6px;font-size:14px;
+    background:transparent;text-align:left;
+  }
+  table.lignes-table td.col-num input{text-align:right;}
+  table.lignes-table input:focus{background:#fff;border-color:var(--amber-dark);outline:none;}
+  table.lignes-table .total-cell{text-align:right;font-weight:700;font-size:13.5px;color:var(--navy);white-space:nowrap;}
+  table.lignes-table .remove-line{
+    background:none;border:none;color:var(--danger);font-size:20px;line-height:1;font-weight:700;cursor:pointer;
+    padding:4px 6px;
+  }
+  .totals-box{
+    background:#F8FAFC;border:1px dashed var(--border);border-radius:10px;padding:12px;margin-top:8px;
+  }
+  .totals-box .t-row{display:flex;justify-content:space-between;font-size:13.5px;padding:3px 0;}
+  .totals-box .t-row.grand{font-size:16px;font-weight:800;color:var(--navy);border-top:1px solid var(--border);margin-top:6px;padding-top:8px;}
+  .toast{
+    position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
+    background:var(--navy);color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;
+    z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;
+  }
+  .toast.show{opacity:1;}
+  .logo-preview{max-width:120px;max-height:60px;display:block;margin-bottom:8px;border-radius:6px;object-fit:contain;}
+  .paste-zone{
+    margin-top:8px;border:2px dashed var(--border);border-radius:8px;padding:14px;text-align:center;
+    font-size:12.5px;color:var(--muted);cursor:text;background:#FAFBFC;
+  }
+  .paste-zone:focus{outline:none;border-color:var(--amber-dark);background:#FFF9EC;}
+  .helper{font-size:11.5px;color:var(--muted);margin-top:3px;}
+  .search-bar{margin-bottom:12px;}
+  select#tabSelect{display:none;}
+
+  /* ---------- Zone imprimable / PDF ---------- */
+  #printArea{display:none;}
+  @media print{
+    body *{visibility:hidden;}
+    #printArea, #printArea *{visibility:visible;}
+    #printArea{
+      display:block !important;position:absolute;top:0;left:0;width:100%;
+      padding:0;margin:0;
+    }
+    .no-print{display:none !important;}
+  }
+  .doc-page{
+    background:#fff;color:#16212E;font-family:Arial,Helvetica,sans-serif;
+    max-width:800px;margin:0 auto;padding:26px;
+  }
+  .doc-header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid var(--amber);padding-bottom:14px;margin-bottom:18px;}
+  .doc-header .logo-img{max-width:150px;max-height:70px;object-fit:contain;}
+  .doc-header .ent-block{font-size:11.5px;line-height:1.5;max-width:260px;}
+  .doc-header .ent-block .ent-name{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:3px;}
+  .doc-title{text-align:right;}
+  .doc-title h2{font-size:20px;color:var(--navy);}
+  .doc-title .num{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  .doc-meta{display:flex;justify-content:space-between;gap:20px;margin-bottom:18px;font-size:12.5px;}
+  .doc-meta .box{border:1px solid #E1E5EA;border-radius:8px;padding:10px 12px;flex:1;}
+  .doc-meta .box h3{font-size:11px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;letter-spacing:.04em;}
+  table.doc-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:14px;}
+  table.doc-table th{
+    background:var(--navy);color:#fff;text-align:left;padding:8px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.03em;
+  }
+  table.doc-table td{padding:7px 8px;border-bottom:1px solid #EDEFF2;}
+  table.doc-table tr:nth-child(even) td{background:#FAFBFC;}
+  .doc-totals{display:flex;justify-content:flex-end;margin-bottom:18px;}
+  .doc-totals table{border-collapse:collapse;font-size:12.5px;min-width:260px;}
+  .doc-totals td{padding:4px 8px;}
+  .doc-totals tr.grand td{font-weight:800;font-size:14.5px;border-top:2px solid var(--navy);padding-top:8px;color:var(--navy);}
+  .doc-notes{font-size:11.5px;color:#333;background:#FAFBFC;border:1px solid #EDEFF2;border-radius:8px;padding:10px 12px;margin-bottom:18px;white-space:pre-wrap;}
+  .doc-signature{display:flex;justify-content:space-between;margin-top:26px;font-size:11.5px;}
+  .doc-signature .box{border:1px solid #E1E5EA;border-radius:8px;padding:12px;width:47%;min-height:80px;}
+  .doc-footer{margin-top:24px;font-size:10px;color:var(--muted);text-align:center;border-top:1px solid #EDEFF2;padding-top:8px;}
+</style>
+</head>
+<body>
+
+<header class="app-header no-print">
+  <div class="brand">
+    <svg class="bolt" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="#F5B93D" stroke-width="1.6"/><path d="M7.5 7.5H16.5M7.5 11.5H16.5M7.5 15.5H13" stroke="#F5B93D" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <div>
+      <h1>Devis Pro</h1>
+      <div class="sub">Vos devis, hors-ligne, toujours avec vous</div>
+    </div>
+  </div>
+  <div class="circuit-rule"></div>
+</header>
+
+<nav class="tabs no-print">
+  <button data-tab="devis" class="active">Documents</button>
+  <button data-tab="articles">Articles</button>
+  <button data-tab="entreprise">Entreprise</button>
+</nav>
+
+<main id="main"></main>
+
+<button class="fab no-print" id="fabBtn" style="display:none;">+</button>
+<div class="toast" id="toast"></div>
+
+<div id="printArea"></div>
+
+<script>
+/* ============================ STOCKAGE ============================ */
+const KEY_ENT='ed_entreprise', KEY_ART='ed_articles', KEY_DEV='ed_devis', KEY_SEQ='ed_seq';
+
+function load(key, fallback){
+  try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+  catch(e){ return fallback; }
+}
+function save(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+
+let entreprise = load(KEY_ENT, {
+  nom:'', adresse:'', cp:'', ville:'', tel:'', email:'',
+  identifiantFiscal:'', rge:'', assurance:'',
+  mentions:"Assurance responsabilité civile professionnelle souscrite.\nRèglement : 30% à la commande, solde à la réception des travaux.",
+  logo:'',
+  tampon:'',
+  signature:''
+});
+let articles = load(KEY_ART, []);
+let devisList = load(KEY_DEV, []);
+let rawSeq = load(KEY_SEQ, {devis:1, facture:1});
+let seq = (typeof rawSeq === 'number') ? {devis:rawSeq, facture:1} : rawSeq;
+
+/* ============================ LICENCE / ACTIVATION (multi-écrans, 365 jours glissants) ============================ */
+// ⚠️ IMPORTANT : remplacez cette valeur par votre propre secret avant de distribuer
+// l'application, et utilisez EXACTEMENT le même secret dans votre générateur de clés
+// (generateur-cles.html). Sans cela, aucune clé ne fonctionnera.
+const LICENSE_SECRET = "HSM14-68BRA-GNI34-00001";
+const KEY_LICENSE = 'ed_license';
+const TRIAL_DAYS = 3;
+const PLAN_DURATIONS = { '1M': 30, '1A': 365 };
+const PLAN_LABELS = { '1M': '1 mois', '1A': '1 an' };
+
+function isoToday(){ return new Date().toISOString().slice(0,10); }
+function addDaysISO(dateStr, days){
+  const d = new Date((dateStr||isoToday())+'T00:00:00');
+  d.setDate(d.getDate()+days);
+  return d.toISOString().slice(0,10);
+}
+function daysRemainingUntil(untilISO){
+  const today = new Date(isoToday()+'T00:00:00');
+  const until = new Date((untilISO||isoToday())+'T00:00:00');
+  return Math.max(0, Math.round((until-today)/86400000));
+}
+
+// deviceCode : généré automatiquement et aléatoirement par CET appareil précis, au tout
+// premier lancement. Il est différent sur chaque téléphone/PC/Mac. La clé calculée à partir
+// de ce code ne fonctionnera QUE sur cet appareil précis — c'est voulu (anti-partage).
+// Pour un client qui achète plusieurs écrans, il faut générer une clé PAR appareil (voir
+// le mode "génération par lot" dans generateur-cles.html).
+// planType : '1M' (1 mois) ou '1A' (1 an) — change la clé attendue ET la durée accordée.
+function computeActivationKey(deviceCode, renewalIndex, planType, secret){
+  const input = normalizeKey(deviceCode) + '#' + String(renewalIndex||0) + '#' + (planType||'') + '|' + (secret||'');
+  let h1 = 0, h2 = 0;
+  for(let i=0;i<input.length;i++){
+    const c = input.charCodeAt(i);
+    h1 = (Math.imul(h1, 131) + c) >>> 0;
+    h2 = (Math.imul(h2, 137) + c + i) >>> 0;
+  }
+  h1 = (h1 ^ (h1 >>> 15)) >>> 0;
+  h2 = (h2 ^ (h2 >>> 13)) >>> 0;
+  const combined = (h1.toString(16) + h2.toString(16) + h1.toString(36) + h2.toString(36)).toUpperCase().replace(/[^A-Z0-9]/g,'');
+  let key = combined.slice(0,12).padEnd(12,'0');
+  return key.match(/.{1,4}/g).join('-');
+}
+function normalizeKey(s){ return (s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
+function generateDeviceCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sans caractères ambigus (0/O, 1/I)
+  let code = '';
+  for(let i=0;i<8;i++){ code += chars[Math.floor(Math.random()*chars.length)]; }
+  return code.match(/.{1,4}/g).join('-');
+}
+
+const WHATSAPP_NUMBER = '22893346814';
+function buildWhatsappLink(license, nextRenewalIndex, statusKind){
+  let action = 'activer';
+  if(statusKind==='license_expired') action = 'renouveler';
+  if(statusKind==='revoked') action = 'réactiver (suspendue)';
+  const msg = `Bonjour, je souhaite ${action} ma licence Devis Pro.\nCode appareil : ${license.deviceCode}\nRenouvellement demandé : n°${nextRenewalIndex}`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
+// ⚠️ Lien vers votre serveur de paiement en ligne (formulaire + FedaPay + livraison automatique).
+const ONLINE_PAYMENT_LINK = 'https://devispro-fedapay-2.onrender.com';
+
+function showTrialBanner(license){
+  const existing = document.getElementById('trialBanner');
+  if(existing) existing.remove();
+  const untilISO = addDaysISO(license.trialStart, TRIAL_DAYS);
+  const days = daysRemainingUntil(untilISO);
+  const bar = document.createElement('div');
+  bar.id = 'trialBanner';
+  bar.style.cssText = 'background:#F5B93D;color:#10233A;font-size:12.5px;font-weight:700;padding:9px 14px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;text-align:center;';
+  bar.innerHTML = `<span>🕒 Essai gratuit : ${days} jour${days>1?'s':''} restant${days>1?'s':''}</span><button id="trialActivateBtn" style="background:#10233A;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;">Activer ma licence</button>`;
+  document.body.insertBefore(bar, document.body.firstChild);
+  document.getElementById('trialActivateBtn').addEventListener('click', ()=>{
+    const nextRenewalIndex = (license.renewalIndex||0) + 1;
+    showLockScreen(license, nextRenewalIndex, 'voluntary', license.expiryDate, false);
+  });
+}
+
+function showLockScreen(license, nextRenewalIndex, statusKind, expiryDate, mandatory){
+  if(mandatory === undefined) mandatory = true;
+  const waLink = buildWhatsappLink(license, nextRenewalIndex, statusKind);
+  const defaultPlan = license.planType || '1A';
+  const overlay=document.createElement('div');
+  overlay.id='lockScreen';
+  overlay.style.cssText='position:fixed;inset:0;z-index:100;background:var(--navy);display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;';
+
+  let title, message;
+  if(statusKind === 'revoked'){
+    title = 'Licence suspendue';
+    message = `Votre licence a été suspendue par votre fournisseur. Contactez-le pour régulariser votre situation.`;
+  } else if(statusKind === 'license_expired'){
+    title = 'Licence expirée';
+    message = `Votre licence est arrivée à échéance${expiryDate?(' le '+frDate(expiryDate)):''}. Renouvelez votre abonnement ou contactez votre fournisseur.`;
+  } else if(statusKind === 'trial_expired'){
+    title = 'Essai gratuit terminé';
+    message = `Votre essai gratuit de ${TRIAL_DAYS} jours est terminé. Choisissez une offre pour continuer à utiliser l'application.`;
+  } else {
+    title = 'Activer votre licence';
+    message = `Communiquez le code appareil ci-dessous à votre fournisseur pour obtenir votre clé d'activation.`;
+  }
+
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:28px 22px;max-width:360px;width:100%;text-align:center;position:relative;">
+      ${!mandatory ? `<button id="lockCloseBtn" style="position:absolute;top:10px;right:12px;background:none;border:none;font-size:20px;color:#5B6B7C;cursor:pointer;">&times;</button>` : ''}
+      <svg width="38" height="38" viewBox="0 0 24 24" fill="none" style="margin-bottom:12px;"><rect x="4" y="2" width="16" height="20" rx="2" stroke="#10233A" stroke-width="1.6"/><path d="M7.5 7.5H16.5M7.5 11.5H16.5M7.5 15.5H13" stroke="#10233A" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <h2 style="font-size:17px;color:#10233A;margin-bottom:6px;">${title}</h2>
+      <div style="font-size:13px;color:#5B6B7C;margin-bottom:14px;">${message}</div>
+      <div style="background:#F5F7FA;border:1px dashed #E1E5EA;border-radius:8px;padding:10px;margin-bottom:8px;">
+        <div style="font-weight:700;font-size:16px;letter-spacing:.05em;color:#10233A;">${escapeHtml(license.deviceCode)}</div>
+        <div style="font-size:11.5px;color:#5B6B7C;margin-top:4px;">Renouvellement n° <strong>${nextRenewalIndex}</strong></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <label style="flex:1;border:1px solid #E1E5EA;border-radius:8px;padding:9px;font-size:12.5px;font-weight:700;color:#10233A;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+          <input type="radio" name="planType" value="1M" ${defaultPlan==='1M'?'checked':''} style="width:auto;"> 1 mois
+        </label>
+        <label style="flex:1;border:1px solid #E1E5EA;border-radius:8px;padding:9px;font-size:12.5px;font-weight:700;color:#10233A;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+          <input type="radio" name="planType" value="1A" ${defaultPlan==='1A'?'checked':''} style="width:auto;"> 1 an
+        </label>
+      </div>
+      <input type="text" id="licenseInput" placeholder="Clé d'activation" style="width:100%;box-sizing:border-box;padding:11px;border:1px solid #E1E5EA;border-radius:8px;font-size:15px;text-align:center;text-transform:uppercase;margin-bottom:10px;">
+      <div id="licenseError" style="color:#C4432B;font-size:12.5px;margin-bottom:10px;display:none;">Clé invalide. Vérifiez la saisie et le plan sélectionné.</div>
+      <button id="licenseSubmit" style="width:100%;padding:11px;border:none;border-radius:9px;background:#F5B93D;color:#10233A;font-weight:700;font-size:14px;cursor:pointer;">Déverrouiller</button>
+      <a href="${ONLINE_PAYMENT_LINK}" target="_blank" rel="noopener" style="margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;padding:11px;border-radius:9px;background:#10233A;color:#fff;font-weight:700;font-size:13.5px;text-decoration:none;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="#fff" stroke-width="1.7"/><path d="M3 9.5H21" stroke="#fff" stroke-width="1.7"/><path d="M6.5 14.5H10" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Payer ma licence en ligne
+      </a>
+      <a href="${waLink}" target="_blank" rel="noopener" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;padding:11px;border-radius:9px;background:#25D366;color:#fff;font-weight:700;font-size:13.5px;text-decoration:none;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3a9 9 0 0 0-7.75 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3Z" stroke="#fff" stroke-width="1.7"/><path d="M8.5 8.7c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.4.2.5.7 1.6.7 1.8.1.1.1.3 0 .4-.1.2-.2.3-.3.5-.2.2-.3.3-.1.6.7 1.2 1.5 1.9 2.6 2.4.2.1.4.1.5-.1.2-.2.6-.7.8-.9.2-.2.3-.2.6-.1.2.1 1.5.7 1.8.9.2.1.4.2.4.3.1.3.1.9-.2 1.4-.3.5-1.4 1-1.9 1-1.3.1-2.7-.5-4.3-1.8-1.9-1.5-3-3.2-3.2-3.6-.2-.4-.9-1.5-.9-2.7 0-1.2.6-1.7.8-1.9Z" fill="#fff"/></svg>
+        Contacter via WhatsApp
+      </a>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  if(!mandatory){
+    const closeBtn = document.getElementById('lockCloseBtn');
+    if(closeBtn) closeBtn.addEventListener('click', ()=> overlay.remove());
+  }
+
+  const submit = ()=>{
+    const planTypeEl = overlay.querySelector('input[name="planType"]:checked');
+    const planType = planTypeEl ? planTypeEl.value : '1A';
+    const raw = document.getElementById('licenseInput').value;
+    const expected = normalizeKey(computeActivationKey(license.deviceCode, nextRenewalIndex, planType, LICENSE_SECRET));
+    if(normalizeKey(raw) === expected){
+      const today = isoToday();
+      const lic = load(KEY_LICENSE, {});
+      lic.deviceCode = license.deviceCode;
+      lic.activated = true;
+      lic.renewalIndex = nextRenewalIndex;
+      lic.planType = planType;
+      lic.activatedDate = today;
+      lic.expiryDate = addDaysISO(today, PLAN_DURATIONS[planType] || 365);
+      lic.key = raw.trim().toUpperCase();
+      save(KEY_LICENSE, lic);
+      overlay.remove();
+      const banner = document.getElementById('trialBanner');
+      if(banner) banner.remove();
+      render();
+    } else {
+      document.getElementById('licenseError').textContent = 'Identifiant ou clé invalide. Vérifiez la saisie.';
+      document.getElementById('licenseError').style.display='block';
+    }
+  };
+  document.getElementById('licenseSubmit').addEventListener('click', submit);
+  document.getElementById('licenseInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') submit(); });
+}
+
+/* ============================ UTILITAIRES ============================ */
+
+function uid(){ return 'id'+Math.random().toString(36).slice(2,10)+Date.now().toString(36); }
+function triggerPrint(){
+  try{
+    if(window.Android && typeof window.Android.print === 'function'){
+      window.Android.print();
+      return;
+    }
+  }catch(e){}
+  try{
+    if(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.iosPrint){
+      window.webkit.messageHandlers.iosPrint.postMessage('print');
+      return;
+    }
+  }catch(e){}
+  window.print();
+}
+function fcfa(n){ return Math.round(n+Number.EPSILON).toLocaleString('fr-FR') + ' FCFA'; }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function frDate(iso){ if(!iso) return ''; const d=new Date(iso+'T00:00:00'); return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function showToast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(showToast._h); showToast._h=setTimeout(()=>t.classList.remove('show'),1800);
+}
+function nextNumero(type){
+  const year=new Date().getFullYear();
+  const prefix = type==='facture' ? 'FAC-' : 'DEV-';
+  const n = prefix+year+'-'+String(seq[type]||1).padStart(4,'0');
+  return n;
+}
+function docTypeLabel(type){ return type==='facture' ? 'Facture' : 'Devis'; }
+
+/* ============================ NAVIGATION ============================ */
+let currentTab='devis';
+let editingDevisId=null;
+
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTab=btn.dataset.tab;
+    render();
+  });
+});
+
+document.getElementById('fabBtn').addEventListener('click', ()=>{
+  if(currentTab==='devis') openTypeChoiceModal();
+  if(currentTab==='articles') openArticleModal(null);
+});
+
+function openTypeChoiceModal(){
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <div class="modal-header"><h2>Nouveau document</h2><button class="close-x">&times;</button></div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px;">Que souhaitez-vous créer ?</div>
+      <div class="actions-row" style="flex-direction:column;">
+        <button class="btn btn-primary btn-block" data-choice="devis" style="margin-bottom:10px;">📄 Devis</button>
+        <button class="btn btn-amber btn-block" data-choice="facture">🧾 Facture</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.close-x').addEventListener('click', ()=>overlay.remove());
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+  overlay.querySelectorAll('[data-choice]').forEach(b=>b.addEventListener('click', ()=>{
+    const type = b.dataset.choice;
+    overlay.remove();
+    openDevisEditor(null, type);
+  }));
+}
+
+function render(){
+  const fab=document.getElementById('fabBtn');
+  fab.style.display = (currentTab==='entreprise') ? 'none':'flex';
+  if(currentTab==='devis') renderDevisList();
+  else if(currentTab==='articles') renderArticles();
+  else renderEntreprise();
+}
+
+/* ============================ ENTREPRISE ============================ */
+function initialesFromNom(nom){
+  const words = (nom||'').trim().split(/\s+/).filter(Boolean);
+  if(words.length===0) return 'DP';
+  if(words.length===1) return words[0].slice(0,2).toUpperCase();
+  return (words[0][0]+words[1][0]).toUpperCase();
+}
+function defaultLogoDataUri(nom){
+  const initials = initialesFromNom(nom);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
+    <rect width="160" height="160" rx="24" fill="#10233A"/>
+    <rect x="5" y="5" width="150" height="150" rx="20" fill="none" stroke="#F5B93D" stroke-width="4"/>
+    <text x="80" y="100" font-family="Arial, Helvetica, sans-serif" font-size="60" font-weight="700" fill="#F5B93D" text-anchor="middle">${initials}</text>
+  </svg>`;
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+function currentLogo(){ return entreprise.logo || defaultLogoDataUri(entreprise.nom); }
+
+function renderEntreprise(){
+  const m=document.getElementById('main');
+  m.innerHTML = `
+    <div class="card">
+      <h2>Coordonnées de l'entreprise</h2>
+      <div class="field">
+        <label>Logo</label>
+        <img src="${currentLogo()}" class="logo-preview">
+        <div class="helper">${entreprise.logo ? 'Logo personnalisé.' : "Logo par défaut généré à partir de vos initiales — importez votre propre logo pour le remplacer."}</div>
+        <input type="file" id="logoInput" accept="image/*" style="margin-top:6px;">
+        ${entreprise.logo ? '<button type="button" class="btn btn-ghost btn-sm" id="removeLogoBtn" style="margin-top:6px;">Revenir au logo par défaut</button>' : ''}
+        <div class="helper">Le logo apparaîtra en haut de vos devis. Il est stocké uniquement sur ce téléphone.</div>
+      </div>
+      <div class="field"><label>Nom de l'entreprise</label><input type="text" id="f_nom" value="${escapeHtml(entreprise.nom)}" placeholder="Ex : Dupont Services"></div>
+      <div class="field"><label>Adresse</label><input type="text" id="f_adresse" value="${escapeHtml(entreprise.adresse)}" placeholder="12 rue des Artisans"></div>
+      <div class="row2">
+        <div class="field"><label>Code postal</label><input type="text" id="f_cp" value="${escapeHtml(entreprise.cp)}"></div>
+        <div class="field"><label>Ville</label><input type="text" id="f_ville" value="${escapeHtml(entreprise.ville)}"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Téléphone</label><input type="tel" id="f_tel" value="${escapeHtml(entreprise.tel)}"></div>
+        <div class="field"><label>E-mail</label><input type="email" id="f_email" value="${escapeHtml(entreprise.email)}"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Mentions légales</h2>
+      <div class="field"><label>N° d'identification fiscale / RCCM</label><input type="text" id="f_idfiscal" value="${escapeHtml(entreprise.identifiantFiscal)}" placeholder="Ex : RCCM TG-LOM-... / NIF ..."></div>
+      <div class="field"><label>Qualification / Agrément (facultatif)</label><input type="text" id="f_rge" value="${escapeHtml(entreprise.rge)}" placeholder="Ex : Agrément ou qualification professionnelle n°..."></div>
+      <div class="field"><label>Assurance</label><input type="text" id="f_assurance" value="${escapeHtml(entreprise.assurance)}" placeholder="Ex : Compagnie - Police n°..."></div>
+      <div class="field"><label>Autres mentions (conditions de règlement, garantie...)</label>
+        <textarea id="f_mentions" rows="4">${escapeHtml(entreprise.mentions)}</textarea>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" id="saveEntBtn">Enregistrer les informations</button>
+
+    <div class="card">
+      <h2>Tampon et signature</h2>
+      <div class="field">
+        <label>Tampon / cachet</label>
+        ${entreprise.tampon ? `<img src="${entreprise.tampon}" class="logo-preview">` : ''}
+        <input type="file" id="tamponInput" accept="image/*" style="margin-top:6px;">
+        <div class="paste-zone" id="tamponPaste" tabindex="0">📋 Ou collez ici une image copiée (Ctrl+V)</div>
+        ${entreprise.tampon ? '<button type="button" class="btn btn-ghost btn-sm" id="removeTamponBtn" style="margin-top:6px;">Retirer le tampon</button>' : ''}
+      </div>
+      <div class="field">
+        <label>Signature</label>
+        ${entreprise.signature ? `<img src="${entreprise.signature}" class="logo-preview">` : ''}
+        <input type="file" id="signatureInput" accept="image/*" style="margin-top:6px;">
+        <div class="paste-zone" id="signaturePaste" tabindex="0">📋 Ou collez ici une image copiée (Ctrl+V)</div>
+        ${entreprise.signature ? '<button type="button" class="btn btn-ghost btn-sm" id="removeSignatureBtn" style="margin-top:6px;">Retirer la signature</button>' : ''}
+      </div>
+      <div class="helper">Le tampon et la signature apparaîtront en bas de vos devis et factures. Ils sont stockés uniquement sur cet appareil.</div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h2>Licence</h2>
+      ${(function(){
+        const lic = load(KEY_LICENSE, {});
+        return `
+        <div class="field"><label>Code appareil (licence)</label><input type="text" disabled value="${lic.deviceCode||''}"></div>
+        <div class="helper">Communiquez ce code à votre fournisseur pour renouveler votre licence.
+          ${lic.activated && lic.expiryDate ? (`Licence ${PLAN_LABELS[lic.planType]||''} valable jusqu'au ${frDate(lic.expiryDate)}.`)
+            : (lic.trialStart ? `Période d'essai gratuit (${TRIAL_DAYS} jours) — jusqu'au ${frDate(addDaysISO(lic.trialStart, TRIAL_DAYS))}.` : '')}
+        </div>`;
+      })()}
+    </div>
+  `;
+
+  document.getElementById('logoInput').addEventListener('change', (e)=>{
+    const file=e.target.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=function(ev){
+      const img=new Image();
+      img.onload=function(){
+        // redimensionner pour limiter la taille stockée
+        const maxW=300, scale=Math.min(1, maxW/img.width);
+        const canvas=document.createElement('canvas');
+        canvas.width=img.width*scale; canvas.height=img.height*scale;
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        entreprise.logo = canvas.toDataURL('image/png');
+        save(KEY_ENT, entreprise);
+        renderEntreprise();
+        showToast('Logo mis à jour');
+      };
+      img.src=ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const removeBtn=document.getElementById('removeLogoBtn');
+  if(removeBtn){
+    removeBtn.addEventListener('click', ()=>{
+      entreprise.logo='';
+      save(KEY_ENT, entreprise);
+      renderEntreprise();
+      showToast('Logo par défaut rétabli');
+    });
+  }
+
+  // ---- Fonctions réutilisables pour le tampon et la signature ----
+  function processImageFile(file, field, maxW, label){
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=function(ev){
+      const img=new Image();
+      img.onload=function(){
+        const scale=Math.min(1, maxW/img.width);
+        const canvas=document.createElement('canvas');
+        canvas.width=img.width*scale; canvas.height=img.height*scale;
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        entreprise[field] = canvas.toDataURL('image/png');
+        save(KEY_ENT, entreprise);
+        renderEntreprise();
+        showToast(label+' mis à jour');
+      };
+      img.src=ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+  function bindPasteZone(zoneId, field, label){
+    const zone=document.getElementById(zoneId);
+    if(!zone) return;
+    zone.addEventListener('paste', (e)=>{
+      const items=(e.clipboardData||window.clipboardData).items;
+      for(let i=0;i<items.length;i++){
+        if(items[i].type.indexOf('image')!==-1){
+          const file=items[i].getAsFile();
+          processImageFile(file, field, 500, label);
+          e.preventDefault();
+          return;
+        }
+      }
+      showToast("Aucune image trouvée dans le presse-papiers");
+    });
+  }
+
+  document.getElementById('tamponInput').addEventListener('change', (e)=>{
+    processImageFile(e.target.files[0], 'tampon', 500, 'Tampon');
+  });
+  document.getElementById('signatureInput').addEventListener('change', (e)=>{
+    processImageFile(e.target.files[0], 'signature', 500, 'Signature');
+  });
+  bindPasteZone('tamponPaste', 'tampon', 'Tampon');
+  bindPasteZone('signaturePaste', 'signature', 'Signature');
+
+  const removeTamponBtn=document.getElementById('removeTamponBtn');
+  if(removeTamponBtn){
+    removeTamponBtn.addEventListener('click', ()=>{
+      entreprise.tampon='';
+      save(KEY_ENT, entreprise);
+      renderEntreprise();
+      showToast('Tampon retiré');
+    });
+  }
+  const removeSignatureBtn=document.getElementById('removeSignatureBtn');
+  if(removeSignatureBtn){
+    removeSignatureBtn.addEventListener('click', ()=>{
+      entreprise.signature='';
+      save(KEY_ENT, entreprise);
+      renderEntreprise();
+      showToast('Signature retirée');
+    });
+  }
+
+  document.getElementById('saveEntBtn').addEventListener('click', ()=>{
+    entreprise.nom=val('f_nom'); entreprise.adresse=val('f_adresse');
+    entreprise.cp=val('f_cp'); entreprise.ville=val('f_ville');
+    entreprise.tel=val('f_tel'); entreprise.email=val('f_email');
+    entreprise.identifiantFiscal=val('f_idfiscal');
+    entreprise.rge=val('f_rge'); entreprise.assurance=val('f_assurance');
+    entreprise.mentions=val('f_mentions');
+    save(KEY_ENT, entreprise);
+    renderEntreprise();
+    showToast('Informations enregistrées');
+  });
+}
+function val(id){ return document.getElementById(id).value.trim(); }
+
+/* ============================ ARTICLES (bibliothèque) ============================ */
+function renderArticles(){
+  const m=document.getElementById('main');
+  let listHtml='';
+  if(articles.length===0){
+    listHtml = `<div class="empty-state">
+      <svg class="bolt" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="#5B6B7C" stroke-width="1.6"/><path d="M7.5 7.5H16.5M7.5 11.5H16.5M7.5 15.5H13" stroke="#5B6B7C" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <div>Aucun article enregistré.<br>Ajoutez vos prestations et produits récurrents (main d'œuvre, matériel, forfaits...) pour créer vos devis plus vite.</div>
+    </div>`;
+  } else {
+    listHtml = articles.map(a=>`
+      <div class="list-item">
+        <div>
+          <div class="name">${escapeHtml(a.designation)}</div>
+          <div class="meta">${fcfa(a.prixUnitaire)}</div>
+        </div>
+        <div class="actions-row">
+          <button class="btn btn-ghost btn-sm" data-edit-art="${a.id}">Modifier</button>
+          <button class="btn btn-danger btn-sm" data-del-art="${a.id}">Suppr.</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  m.innerHTML = `<div class="card"><h2>Bibliothèque d'articles</h2>${listHtml}</div>`;
+
+  m.querySelectorAll('[data-edit-art]').forEach(b=>b.addEventListener('click',()=>openArticleModal(b.dataset.editArt)));
+  m.querySelectorAll('[data-del-art]').forEach(b=>b.addEventListener('click',()=>{
+    if(confirm('Supprimer cet article de la bibliothèque ?')){
+      articles = articles.filter(a=>a.id!==b.dataset.delArt);
+      save(KEY_ART, articles); renderArticles(); showToast('Article supprimé');
+    }
+  }));
+}
+
+function openArticleModal(id){
+  const a = id ? articles.find(x=>x.id===id) : {id:uid(), designation:'', prixUnitaire:0};
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <div class="modal-header"><h2>${id?"Modifier l'article":"Nouvel article"}</h2><button class="close-x">&times;</button></div>
+      <div class="field"><label>Désignation</label><input type="text" id="a_desig" value="${escapeHtml(a.designation)}" placeholder="Ex : Prestation, service ou produit"></div>
+      <div class="field"><label>Prix unitaire (FCFA)</label><input type="number" step="1" id="a_prix" value="${a.prixUnitaire}"></div>
+      <button class="btn btn-primary btn-block" id="a_save">Enregistrer l'article</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('.close-x').addEventListener('click', ()=>overlay.remove());
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+  overlay.querySelector('#a_save').addEventListener('click', ()=>{
+    const desig = overlay.querySelector('#a_desig').value.trim();
+    if(!desig){ alert('Merci de saisir une désignation.'); return; }
+    a.designation=desig;
+    a.prixUnitaire=parseFloat(overlay.querySelector('#a_prix').value)||0;
+    if(!id) articles.push(a);
+    else articles = articles.map(x=>x.id===a.id?a:x);
+    save(KEY_ART, articles);
+    overlay.remove();
+    renderArticles();
+    showToast('Article enregistré');
+  });
+}
+
+/* ============================ DEVIS : LISTE ============================ */
+function statutLabel(s, type){
+  if(type==='facture'){
+    return {brouillon:'Brouillon', envoye:'Envoyée', accepte:'Payée', refuse:'Impayée'}[s] || 'Brouillon';
+  }
+  return {brouillon:'Brouillon', envoye:'Envoyé', accepte:'Accepté', refuse:'Refusé'}[s] || 'Brouillon';
+}
+function computeTotals(devis){
+  const remise = devis.remisePct||0;
+  let sousTotal=0, sousTotalBrut=0;
+  devis.lignes.forEach(l=>{
+    const brut = l.qte * l.prixUnitaire;
+    sousTotalBrut += brut;
+    sousTotal += brut * (1 - remise/100);
+  });
+  const remiseMontant = sousTotalBrut - sousTotal;
+  const mainOeuvre = devis.type==='facture' ? 0 : (devis.mainOeuvre||0);
+  const total = sousTotal + mainOeuvre;
+  return {sousTotal, sousTotalBrut, remiseMontant, mainOeuvre, total};
+}
+
+function renderDevisList(){
+  const m=document.getElementById('main');
+  let listHtml='';
+  if(devisList.length===0){
+    listHtml=`<div class="empty-state">
+      <svg class="bolt" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="#5B6B7C" stroke-width="1.6"/><path d="M7.5 7.5H16.5M7.5 11.5H16.5M7.5 15.5H13" stroke="#5B6B7C" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <div>Aucun document pour le moment.<br>Appuyez sur le bouton + pour créer votre premier devis ou facture.</div>
+    </div>`;
+  } else {
+    const sorted=[...devisList].sort((a,b)=> (b.dateCreation||'').localeCompare(a.dateCreation||''));
+    listHtml = sorted.map(d=>{
+      const t=computeTotals(d);
+      const type = d.type||'devis';
+      return `
+      <div class="list-item">
+        <div>
+          <div class="name">${type==='facture'?'🧾':'📄'} ${d.numero} — ${escapeHtml(d.client.nom)||'Client sans nom'}</div>
+          <div class="meta">${frDate(d.dateCreation)} · ${fcfa(t.total)} <span class="pill ${d.statut}">${statutLabel(d.statut, type)}</span></div>
+        </div>
+        <div class="actions-row">
+          <button class="btn btn-ghost btn-sm" data-open-dev="${d.id}">Ouvrir</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  m.innerHTML = `<div class="card"><h2>Vos documents</h2>${listHtml}</div>`;
+  m.querySelectorAll('[data-open-dev]').forEach(b=>b.addEventListener('click',()=>openDevisEditor(b.dataset.openDev)));
+}
+
+/* ============================ DEVIS : ÉDITEUR ============================ */
+function openDevisEditor(id, type){
+  let devis;
+  if(id){ devis = devisList.find(d=>d.id===id); }
+  else {
+    const docType = type || 'devis';
+    devis = {
+      id:uid(), type: docType, numero: nextNumero(docType), dateCreation: todayISO(), validiteJours:30,
+      client:{nom:'',adresse:'',cp:'',ville:'',tel:'',email:''},
+      lignes:[], remisePct:0, mainOeuvre:0, notes:'', statut:'brouillon'
+    };
+  }
+  if(!devis.type) devis.type = 'devis'; // compatibilité anciens documents créés avant cette mise à jour
+  editingDevisId = devis.id;
+
+  const m=document.getElementById('main');
+  m.innerHTML = `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <span class="pill" style="margin-bottom:4px;display:inline-block;">${devis.type==='facture'?'🧾 Facture':'📄 Devis'}</span>
+          <h2 style="margin-bottom:0;">${devis.numero}</h2>
+        </div>
+        <select id="d_statut">
+          ${['brouillon','envoye','accepte','refuse'].map(s=>`<option value="${s}" ${s===devis.statut?'selected':''}>${statutLabel(s, devis.type)}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Client</h2>
+      <div class="field"><label>Nom / Raison sociale</label><input type="text" id="c_nom" value="${escapeHtml(devis.client.nom)}"></div>
+      <div class="field"><label>Adresse</label><input type="text" id="c_adresse" value="${escapeHtml(devis.client.adresse)}"></div>
+      <div class="row2">
+        <div class="field"><label>Code postal</label><input type="text" id="c_cp" value="${escapeHtml(devis.client.cp)}"></div>
+        <div class="field"><label>Ville</label><input type="text" id="c_ville" value="${escapeHtml(devis.client.ville)}"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Téléphone</label><input type="tel" id="c_tel" value="${escapeHtml(devis.client.tel)}"></div>
+        <div class="field"><label>E-mail</label><input type="email" id="c_email" value="${escapeHtml(devis.client.email)}"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Détails du ${devis.type==='facture'?'facture':'devis'}</h2>
+      <div class="row2">
+        <div class="field"><label>Date</label><input type="date" id="d_date" value="${devis.dateCreation}"></div>
+        <div class="field"><label>${devis.type==='facture'?"Échéance (jours)":"Validité (jours)"}</label><input type="number" id="d_validite" value="${devis.validiteJours}"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Prestations et fournitures</h2>
+      <div id="lignesContainer"></div>
+      <div class="actions-row">
+        <button class="btn btn-ghost btn-sm" id="addFromLib">+ Depuis la bibliothèque</button>
+        <button class="btn btn-ghost btn-sm" id="addFree">+ Ligne libre</button>
+      </div>
+      <div class="row2" style="margin-top:12px;">
+        <div class="field">
+          <label>Remise globale (%)</label>
+          <input type="number" id="d_remise" value="${devis.remisePct}">
+        </div>
+        ${devis.type!=='facture' ? `
+        <div class="field">
+          <label>Main d'œuvre (FCFA)</label>
+          <input type="number" step="1" id="d_mainoeuvre" value="${devis.mainOeuvre||0}">
+        </div>` : ''}
+      </div>
+      <div class="totals-box" id="totalsBox"></div>
+    </div>
+
+    <div class="card">
+      <h2>Notes / conditions particulières</h2>
+      <textarea id="d_notes" rows="3" placeholder="Ex : délai d'intervention, précisions sur les travaux...">${escapeHtml(devis.notes)}</textarea>
+    </div>
+
+    <div class="actions-row" style="margin-bottom:20px;">
+      <button class="btn btn-primary" id="saveDevisBtn">Enregistrer</button>
+      <button class="btn btn-amber" id="pdfDevisBtn">Aperçu / Imprimer PDF</button>
+      <button class="btn btn-ghost" id="dupDevisBtn">Dupliquer</button>
+      <button class="btn btn-danger" id="delDevisBtn">Supprimer</button>
+      <button class="btn btn-ghost" id="backDevisBtn">Retour à la liste</button>
+    </div>
+  `;
+
+  function renderLignes(){
+    const c=document.getElementById('lignesContainer');
+    if(devis.lignes.length===0){
+      c.innerHTML = `<div class="helper" style="margin-bottom:8px;">Aucune ligne. Ajoutez une prestation ci-dessous.</div>`;
+    } else {
+      c.innerHTML = `
+        <div class="table-scroll">
+        <table class="lignes-table">
+          <thead>
+            <tr><th class="col-desig">Désignation</th><th class="col-num">Quantité</th><th class="col-num">Prix unitaire</th><th class="col-num">Prix total</th><th class="col-rm"></th></tr>
+          </thead>
+          <tbody>
+          ${devis.lignes.map((l,i)=>`
+            <tr data-row="${i}">
+              <td class="col-desig"><input type="text" data-li="${i}" data-f="designation" value="${escapeHtml(l.designation)}" placeholder="Désignation"></td>
+              <td class="col-num"><input type="number" step="0.01" data-li="${i}" data-f="qte" value="${l.qte}"></td>
+              <td class="col-num"><input type="number" step="1" data-li="${i}" data-f="prixUnitaire" value="${l.prixUnitaire}"></td>
+              <td class="col-num total-cell">${fcfa(l.qte*l.prixUnitaire)}</td>
+              <td class="col-rm"><button class="remove-line" data-rm="${i}">&times;</button></td>
+            </tr>
+          `).join('')}
+          </tbody>
+        </table>
+        </div>`;
+      c.querySelectorAll('input[data-li]').forEach(inp=>{
+        inp.addEventListener('input', ()=>{
+          const i=parseInt(inp.dataset.li), f=inp.dataset.f;
+          const v = inp.value;
+          devis.lignes[i][f] = (f==='qte'||f==='prixUnitaire') ? (parseFloat(v)||0) : v;
+          recalcRowTotals();
+          renderTotals();
+        });
+      });
+      c.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{
+        devis.lignes.splice(parseInt(b.dataset.rm),1);
+        renderLignes(); renderTotals();
+      }));
+    }
+  }
+
+  function recalcRowTotals(){
+    const c=document.getElementById('lignesContainer');
+    c.querySelectorAll('tr[data-row]').forEach(row=>{
+      const i=parseInt(row.dataset.row);
+      const l=devis.lignes[i];
+      const cell=row.querySelector('.total-cell');
+      if(cell) cell.textContent = fcfa(l.qte*l.prixUnitaire);
+    });
+  }
+
+  function renderTotals(){
+    devis.remisePct = parseFloat(document.getElementById('d_remise').value)||0;
+    const moInput = document.getElementById('d_mainoeuvre');
+    if(moInput) devis.mainOeuvre = parseFloat(moInput.value)||0;
+    const t=computeTotals(devis);
+    const box=document.getElementById('totalsBox');
+    box.innerHTML = `
+      <div class="t-row"><span>Sous-total</span><span>${fcfa(t.sousTotalBrut)}</span></div>
+      ${devis.remisePct ? `<div class="t-row"><span>Remise (${devis.remisePct}%)</span><span>-${fcfa(t.remiseMontant)}</span></div>` : ''}
+      ${devis.type!=='facture' ? `<div class="t-row"><span>Main d'œuvre</span><span>${fcfa(t.mainOeuvre)}</span></div>` : ''}
+      <div class="t-row grand"><span>Totaux</span><span>${fcfa(t.total)}</span></div>
+    `;
+  }
+
+  renderLignes(); renderTotals();
+
+  const mainOeuvreInput = document.getElementById('d_mainoeuvre');
+  if(mainOeuvreInput) mainOeuvreInput.addEventListener('input', renderTotals);
+
+  document.getElementById('addFree').addEventListener('click', ()=>{
+    devis.lignes.push({designation:'', qte:1, prixUnitaire:0});
+    renderLignes(); renderTotals();
+  });
+
+  document.getElementById('addFromLib').addEventListener('click', ()=>{
+    if(articles.length===0){ alert("Votre bibliothèque d'articles est vide. Ajoutez-en depuis l'onglet Articles."); return; }
+    const overlay=document.createElement('div');
+    overlay.className='modal-overlay';
+    overlay.innerHTML = `
+      <div class="modal">
+        <div class="modal-header"><h2>Choisir un article</h2><button class="close-x">&times;</button></div>
+        ${articles.map(a=>`
+          <div class="list-item" data-pick="${a.id}" style="cursor:pointer;">
+            <div><div class="name">${escapeHtml(a.designation)}</div><div class="meta">${fcfa(a.prixUnitaire)}</div></div>
+            <button class="btn btn-amber btn-sm">Ajouter</button>
+          </div>
+        `).join('')}
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector('.close-x').addEventListener('click', ()=>overlay.remove());
+    overlay.addEventListener('click',(e)=>{ if(e.target===overlay) overlay.remove(); });
+    overlay.querySelectorAll('[data-pick]').forEach(item=>{
+      item.addEventListener('click', ()=>{
+        const a=articles.find(x=>x.id===item.dataset.pick);
+        devis.lignes.push({designation:a.designation, qte:1, prixUnitaire:a.prixUnitaire});
+        overlay.remove();
+        renderLignes(); renderTotals();
+      });
+    });
+  });
+
+  document.getElementById('d_remise').addEventListener('input', ()=>{ renderTotals(); recalcRowTotals(); });
+
+  function collectDevisFromForm(){
+    devis.client.nom=val('c_nom'); devis.client.adresse=val('c_adresse');
+    devis.client.cp=val('c_cp'); devis.client.ville=val('c_ville');
+    devis.client.tel=val('c_tel'); devis.client.email=val('c_email');
+    devis.dateCreation=document.getElementById('d_date').value || todayISO();
+    devis.validiteJours=parseInt(document.getElementById('d_validite').value)||30;
+    devis.notes=document.getElementById('d_notes').value;
+    devis.statut=document.getElementById('d_statut').value;
+    devis.remisePct=parseFloat(document.getElementById('d_remise').value)||0;
+    const moEl = document.getElementById('d_mainoeuvre');
+    devis.mainOeuvre = moEl ? (parseFloat(moEl.value)||0) : 0;
+  }
+
+  document.getElementById('saveDevisBtn').addEventListener('click', ()=>{
+    collectDevisFromForm();
+    const exists = devisList.some(d=>d.id===devis.id);
+    if(!exists){ devisList.push(devis); if(!id){ seq[devis.type]=(seq[devis.type]||1)+1; save(KEY_SEQ, seq); } }
+    else devisList = devisList.map(d=>d.id===devis.id?devis:d);
+    save(KEY_DEV, devisList);
+    showToast((devis.type==='facture'?'Facture':'Devis')+' enregistré(e)');
+  });
+
+  document.getElementById('pdfDevisBtn').addEventListener('click', ()=>{
+    collectDevisFromForm();
+    const exists = devisList.some(d=>d.id===devis.id);
+    if(!exists){ devisList.push(devis); if(!id){ seq[devis.type]=(seq[devis.type]||1)+1; save(KEY_SEQ, seq); } }
+    else devisList = devisList.map(d=>d.id===devis.id?devis:d);
+    save(KEY_DEV, devisList);
+    printDevis(devis);
+  });
+
+  document.getElementById('dupDevisBtn').addEventListener('click', ()=>{
+    collectDevisFromForm();
+    const copy = JSON.parse(JSON.stringify(devis));
+    copy.id=uid(); copy.numero=nextNumero(copy.type); seq[copy.type]=(seq[copy.type]||1)+1; save(KEY_SEQ, seq);
+    copy.dateCreation=todayISO(); copy.statut='brouillon';
+    devisList.push(copy); save(KEY_DEV, devisList);
+    showToast((copy.type==='facture'?'Facture':'Devis')+' dupliqué(e)');
+    openDevisEditor(copy.id);
+  });
+
+  document.getElementById('delDevisBtn').addEventListener('click', ()=>{
+    if(confirm(`Supprimer définitivement ce ${devis.type==='facture'?'facture':'devis'} ?`)){
+      devisList = devisList.filter(d=>d.id!==devis.id);
+      save(KEY_DEV, devisList);
+      currentTab='devis'; render();
+    }
+  });
+
+  document.getElementById('backDevisBtn').addEventListener('click', ()=>{ currentTab='devis'; render(); });
+}
+
+/* ============================ IMPRESSION / PDF ============================ */
+function printDevis(devis){
+  const t=computeTotals(devis);
+  const p=document.getElementById('printArea');
+  const dateValidite = new Date(new Date(devis.dateCreation+'T00:00:00').getTime() + devis.validiteJours*86400000);
+  p.innerHTML = `
+    <div class="doc-page">
+      <div class="doc-header">
+        <div>
+          <img src="${currentLogo()}" class="logo-img"><br>
+          <div class="ent-block">
+            <div class="ent-name">${escapeHtml(entreprise.nom)||'Votre entreprise'}</div>
+            ${escapeHtml(entreprise.adresse)}<br>
+            ${escapeHtml(entreprise.cp)} ${escapeHtml(entreprise.ville)}<br>
+            ${entreprise.tel?('Tél : '+escapeHtml(entreprise.tel)+'<br>'):''}
+            ${entreprise.email?('E-mail : '+escapeHtml(entreprise.email)+'<br>'):''}
+            ${entreprise.identifiantFiscal?('Id. fiscal : '+escapeHtml(entreprise.identifiantFiscal)+'<br>'):''}
+            ${entreprise.rge?(escapeHtml(entreprise.rge)+'<br>'):''}
+          </div>
+        </div>
+        <div class="doc-title">
+          <h2>${devis.type==='facture'?'FACTURE':'DEVIS'}</h2>
+          <div class="num">${devis.numero}</div>
+          <div class="num">Date : ${frDate(devis.dateCreation)}</div>
+          <div class="num">${devis.type==='facture'?'Échéance':'Validité'} : ${frDate(dateValidite.toISOString().slice(0,10))}</div>
+        </div>
+      </div>
+
+      <div class="doc-meta">
+        <div class="box">
+          <h3>Client</h3>
+          ${escapeHtml(devis.client.nom)}<br>
+          ${escapeHtml(devis.client.adresse)}<br>
+          ${escapeHtml(devis.client.cp)} ${escapeHtml(devis.client.ville)}<br>
+          ${devis.client.tel?('Tél : '+escapeHtml(devis.client.tel)+'<br>'):''}
+          ${devis.client.email?('E-mail : '+escapeHtml(devis.client.email)):''}
+        </div>
+      </div>
+
+      <table class="doc-table">
+        <thead><tr><th>Désignation</th><th>Quantité</th><th>Prix unitaire</th><th>Prix total</th></tr></thead>
+        <tbody>
+          ${devis.lignes.map(l=>`
+            <tr>
+              <td>${escapeHtml(l.designation)}</td>
+              <td>${l.qte}</td>
+              <td>${fcfa(l.prixUnitaire)}</td>
+              <td>${fcfa(l.qte*l.prixUnitaire)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+
+      <div class="doc-totals">
+        <table>
+          <tr><td>Sous-total</td><td style="text-align:right;">${fcfa(t.sousTotalBrut)}</td></tr>
+          ${devis.remisePct ? `<tr><td>Remise (${devis.remisePct}%)</td><td style="text-align:right;">-${fcfa(t.remiseMontant)}</td></tr>` : ''}
+          ${devis.type!=='facture' ? `<tr><td>Main d'œuvre</td><td style="text-align:right;">${fcfa(t.mainOeuvre)}</td></tr>` : ''}
+          <tr class="grand"><td>Totaux</td><td style="text-align:right;">${fcfa(t.total)}</td></tr>
+        </table>
+      </div>
+
+      ${(devis.notes||entreprise.mentions) ? `<div class="doc-notes">${escapeHtml([devis.notes, entreprise.mentions].filter(Boolean).join('\\n\\n'))}</div>` : ''}
+
+      <div class="doc-signature">
+        <div class="box">${devis.type==='facture'?'Facture établie par':'Devis établi par'}<br><br>${escapeHtml(entreprise.nom)}
+          ${(entreprise.tampon || entreprise.signature) ? `<div style="margin-top:8px;display:flex;gap:10px;align-items:flex-end;">
+            ${entreprise.signature ? `<img src="${entreprise.signature}" style="max-height:50px;max-width:120px;object-fit:contain;">` : ''}
+            ${entreprise.tampon ? `<img src="${entreprise.tampon}" style="max-height:60px;max-width:90px;object-fit:contain;">` : ''}
+          </div>` : ''}
+        </div>
+        <div class="box">${devis.type==='facture'?'Reçu pour acquit — Date et signature :':'Bon pour accord — Date et signature du client :'}<br><br><br></div>
+      </div>
+
+      <div class="doc-footer">
+        ${escapeHtml(entreprise.nom)} ${entreprise.identifiantFiscal?('- '+escapeHtml(entreprise.identifiantFiscal)):''} ${entreprise.assurance?('- Assurance : '+escapeHtml(entreprise.assurance)):''}
+      </div>
+    </div>
+  `;
+  triggerPrint();
+}
+
+// ⚠️ URL de votre service de vérification de suspension (même serveur Render que FedaPay).
+const REVOCATION_CHECK_URL = 'https://devispro-fedapay-2.onrender.com/api/check-revoked';
+
+function checkRevocationSilently(license){
+  if(!license || !license.deviceCode) return;
+  try{
+    const controller = new AbortController();
+    const timeoutId = setTimeout(()=>controller.abort(), 4000);
+    fetch(REVOCATION_CHECK_URL + '?deviceCode=' + encodeURIComponent(license.deviceCode), {signal: controller.signal})
+      .then(res=> res.ok ? res.json() : null)
+      .then(data=>{
+        clearTimeout(timeoutId);
+        if(data && data.revoked){
+          const existingLock = document.getElementById('lockScreen');
+          if(existingLock) existingLock.remove();
+          const existingBanner = document.getElementById('trialBanner');
+          if(existingBanner) existingBanner.remove();
+          const nextRenewalIndex = (license.renewalIndex||0) + 1;
+          showLockScreen(license, nextRenewalIndex, 'revoked', license.expiryDate, true);
+        }
+      })
+      .catch(()=>{ /* pas d'internet ou serveur injoignable : on ignore silencieusement, l'app reste hors-ligne fonctionnelle */ });
+  }catch(e){ /* fetch indisponible dans ce contexte : on ignore */ }
+}
+
+/* ============================ INITIALISATION ============================ */
+(function initApp(){
+  let license = load(KEY_LICENSE, null);
+  if(!license){
+    license = {deviceCode: generateDeviceCode(), activated:false, renewalIndex:0, activatedDate:'', expiryDate:'', key:'', planType:'', trialStart: isoToday()};
+    save(KEY_LICENSE, license);
+  }
+  if(!license.deviceCode){ license.deviceCode = generateDeviceCode(); save(KEY_LICENSE, license); }
+  if(!license.trialStart){ license.trialStart = isoToday(); save(KEY_LICENSE, license); }
+
+  const today = isoToday();
+  const paidValid = license.activated && license.expiryDate && today <= license.expiryDate;
+  const trialEndISO = addDaysISO(license.trialStart, TRIAL_DAYS);
+  const trialValid = !license.activated && today <= trialEndISO;
+
+  if(paidValid){
+    render();
+  } else if(trialValid){
+    render();
+    showTrialBanner(license);
+  } else {
+    const nextRenewalIndex = (license.renewalIndex||0) + 1;
+    const statusKind = license.activated ? 'license_expired' : 'trial_expired';
+    showLockScreen(license, nextRenewalIndex, statusKind, license.expiryDate, true);
+  }
+
+  // Vérification de suspension : silencieuse, non bloquante, ignorée si pas d'internet.
+  checkRevocationSilently(license);
+})();
+</script>
+</body>
+</html>
