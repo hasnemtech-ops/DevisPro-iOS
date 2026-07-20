@@ -1,0 +1,53 @@
+name: Build iOS (.ipa pour iPhone réel)
+
+# Compile un .ipa NON SIGNÉ pour un vrai iPhone (pas le simulateur cette fois).
+# Ce fichier n'est pas installable tel quel : il doit être signé avec un
+# identifiant Apple via Sideloadly ou AltStore sur votre ordinateur, une fois
+# téléchargé. C'est volontaire — voir le README pour la suite.
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-ios-device:
+    runs-on: macos-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer XcodeGen
+        run: brew install xcodegen
+
+      - name: Générer le projet Xcode
+        run: xcodegen generate
+
+      - name: Compiler et archiver (sans signature) pour iPhone
+        run: |
+          xcodebuild archive \
+            -project DevisPro.xcodeproj \
+            -scheme DevisPro \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/DevisPro.xcarchive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            ONLY_ACTIVE_ARCH=NO
+
+      - name: Construire le fichier .ipa (non signé)
+        run: |
+          mkdir -p Payload
+          cp -R build/DevisPro.xcarchive/Products/Applications/DevisPro.app Payload/
+          zip -r DevisPro-unsigned.ipa Payload
+          mkdir -p output
+          mv DevisPro-unsigned.ipa output/
+
+      - name: Publier le résultat en téléchargement
+        uses: actions/upload-artifact@v4
+        with:
+          name: DevisPro-iOS-unsigned-ipa
+          path: output/DevisPro-unsigned.ipa
+          if-no-files-found: error
